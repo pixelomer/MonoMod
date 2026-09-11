@@ -10,6 +10,9 @@
         /// </summary>
         Unknown = 0,
 
+        /// <summary>Horizon homebrew through libnx. This is not a POSIX kernel.</summary>
+        Libnx = 1 << 30,
+
         // low 5 bits are flags for the base OS
         // bit 0 is Posix, 1 is Windows, 2 is OSX, 3 is Linux, 4 is BSD
         // remaining bits are a subtype
@@ -90,7 +93,7 @@
         /// </remarks>
         /// <param name="operatingSystem">The <see cref="OSKind"/> to get the kernel of.</param>
         /// <returns>The <see cref="OSKind"/> representing <paramref name="operatingSystem"/>'s kernel.</returns>
-        public static OSKind GetKernel(this OSKind operatingSystem) => (OSKind)((int)operatingSystem & 0b11111);
+        public static OSKind GetKernel(this OSKind operatingSystem) => (OSKind)((int)operatingSystem & (0b11111 | (int)OSKind.Libnx));
         /// <summary>
         /// Gets the subtype ID for <paramref name="operatingSystem"/>.
         /// </summary>
@@ -100,6 +103,6 @@
         /// </remarks>
         /// <param name="operatingSystem">The <see cref="OSKind"/> to get the subtype ID of.</param>
         /// <returns>The subtype ID of <paramref name="operatingSystem"/>.</returns>
-        public static int GetSubtypeId(this OSKind operatingSystem) => (int)operatingSystem >> 5;
+        public static int GetSubtypeId(this OSKind operatingSystem) => ((int)operatingSystem & ~(int)OSKind.Libnx) >> 5;
     }
 }

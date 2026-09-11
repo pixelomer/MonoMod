@@ -84,6 +84,13 @@ namespace MonoMod.Utils
 
         private static (OSKind OS, ArchitectureKind Arch) DetectPlatformInfo()
         {
+#if NET5_0_OR_GREATER
+            // The Horizon CoreLib declares its own platform; never probe it with
+            // Linux uname or infer Linux from Environment.OSVersion.Platform.
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Create("LIBNX")))
+                return (OSKind.Libnx, RuntimeInformation.ProcessArchitecture == System.Runtime.InteropServices.Architecture.Arm64
+                    ? ArchitectureKind.Arm64 : ArchitectureKind.Unknown);
+#endif
             var os = OSKind.Unknown;
             var arch = ArchitectureKind.Unknown;
 

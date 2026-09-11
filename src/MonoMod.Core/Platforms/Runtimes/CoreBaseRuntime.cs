@@ -124,6 +124,13 @@ namespace MonoMod.Core.Platforms.Runtimes
 
         private unsafe IntPtr GetJitObject()
         {
+            if (System is IEmbeddedJitSystem embedded)
+            {
+                var jit = embedded.GetJitObject();
+                if (jit == IntPtr.Zero)
+                    throw new PlatformNotSupportedException("The embedded CoreCLR JIT is unavailable");
+                return jit;
+            }
             var path = GetClrJitPath();
 
             if (!DynDll.TryOpenLibrary(path, out var clrjit))

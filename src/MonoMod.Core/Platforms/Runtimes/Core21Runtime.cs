@@ -90,7 +90,10 @@ namespace MonoMod.Core.Platforms.Runtimes
 
             // Get the real compile method vtable slot
             var compileMethodSlot = GetVTableEntry(jit, VtableIndexICorJitCompilerCompileMethod);
-            var compileMethod = EHManagedToNative(*compileMethodSlot, out m2nHookHelper);
+            var embedded = System as IEmbeddedJitSystem;
+            var originalCompileMethod = embedded is not null ? embedded.GetCompileMethod() : *compileMethodSlot;
+            Helpers.Assert(originalCompileMethod != IntPtr.Zero, "Embedded compile callback is unavailable");
+            var compileMethod = EHManagedToNative(originalCompileMethod, out m2nHookHelper);
 
             // create our compileMethod delegate
             var ourCompileMethodDelegate = CastCompileHookToRealType(CreateCompileMethodDelegate(compileMethod));
@@ -105,7 +108,15 @@ namespace MonoMod.Core.Platforms.Runtimes
             Span<byte> ptrData = stackalloc byte[sizeof(IntPtr)];
             MemoryMarshal.Write(ptrData, ref ourCompileMethodPtr);
 
-            System.PatchData(PatchTargetKind.ReadOnly, (IntPtr)compileMethodSlot, ptrData, default);
+            if (embedded is not null)
+            {
+                if (!embedded.TrySetCompileMethodHook(originalCompileMethod, ourCompileMethodPtr))
+                    throw new InvalidOperationException("The embedded JIT compile callback changed during hook installation");
+            }
+            else
+            {
+                System.PatchData(PatchTargetKind.ReadOnly, (IntPtr)compileMethodSlot, ptrData, default);
+            }
         }
 
         protected unsafe virtual void InvokeCompileMethodToPrepare(IntPtr method)
