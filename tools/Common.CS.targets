@@ -8,7 +8,8 @@
   
   <!-- Roslyn references -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="$(RoslynVersion)" PrivateAssets="all" />
+    <!-- Use the selected SDK compiler when its generators require a newer runtime. -->
+    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="$(RoslynVersion)" PrivateAssets="all" Condition="'$(MMUseSdkCompiler)' != 'true'" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="$(RoslynVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
