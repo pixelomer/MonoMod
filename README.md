@@ -1,3 +1,5 @@
+Horizon source build and runtime integration: [README.libnx.md](README.libnx.md).
+
 # MonoMod
 <!-- #links -->
 <a href="https://discord.gg/jm7GCZB"><img align="right" alt="MonoMod Discord" src="https://discordapp.com/api/guilds/295566538981769216/embed.png?style=banner2" /></a>

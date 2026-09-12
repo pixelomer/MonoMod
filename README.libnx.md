@@ -5,9 +5,31 @@ MonoMod is MIT (LICENSE); upstream's iced submodule is MIT at
 c50f29b7bc305696895c075f3fc7719751426b12. Preserve upstream source/licenses.
 No Nintendo SDK or proprietary derivative is an input.
 
-The opt-in SDK compiler selection supports source generators that require the
-runtime bundled with the selected .NET SDK. The Horizon hosting requirements
-for Hook/ILHook and native memory access are described below.
+The integration supports runtime Hook/ILHook and assembly loading on
+[Horizon CoreCLR .NET 10](https://github.com/pixelomer/dotnet-runtime), built via
+[dotnet-switch](https://github.com/pixelomer/dotnet-switch). Applications can
+reference the net8 assemblies when embedding that runtime.
+
+## Standalone build
+
+Install Python 3.12+, Git and the .NET 10.0.1xx SDK on Linux x86-64. Run:
+
+```sh
+python3 build-horizon.py
+```
+
+The script fetches the exact iced submodule, then builds RuntimeDetour, Patcher
+and HookGen in Release using SDK Roslyn 5.0.0. Outputs are under
+`artifacts/horizon/`; individual DLLs are in `bin/PROJECT/release_net8.0/`.
+`--framework net10.0` builds a .NET 10 consumer variant. Native helper generation
+uses the upstream pinned tool dependencies fetched during restore. To link a
+Horizon host, compile `native/libnx/exception-helper.c` and the existing ARM64
+assembly helper
+`src/MonoMod.Core/Platforms/Architectures/arm64/exhelper_linux_macos_arm64.S`
+into the NRO, registering the runtime bridge exports.
+
+`--source-mirrors JSON` maps canonical URLs to Git source mirrors. Generated
+Horizon restore locks are separate from upstream package locks.
 
 ## Desktop control build
 
