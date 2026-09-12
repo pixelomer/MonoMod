@@ -55,3 +55,7 @@ JIT GUID and private-layout checks. Test recompilation, generic/virtual dispatch
 callback ABI and hook lifetime; merely generating ARM64 branch bytes is not
 sufficient. A native bridge should reuse the runtime's ExecutableAllocator and
 PAL ownership/protection machinery where possible.
+
+The source-build helpers' recursive source-fetch controls can be run with
+`python3 tests/horizon/test_sources.py`; these tests create only temporary,
+original Git fixtures and do not require a console or game files.
